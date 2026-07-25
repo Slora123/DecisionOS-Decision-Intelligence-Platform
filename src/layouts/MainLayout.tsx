@@ -5,13 +5,48 @@ import Navbar from '../components/Navbar';
 import NewDecisionModal from '../components/NewDecisionModal';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import { useEffect } from 'react';
+
 interface MainLayoutProps {
   children: React.ReactNode;
   onShowShortcuts: () => void;
 }
 
 export default function MainLayout({ children, onShowShortcuts }: MainLayoutProps) {
-  const { darkMode, currentPage, globalToastMsg } = useAppStore();
+  const { darkMode, currentPage, globalToastMsg, setCurrentPage, toggleSidebar, setDecisionModalOpen } = useAppStore();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      if (e.metaKey || e.ctrlKey) {
+        switch (e.key.toLowerCase()) {
+          case 'k':
+            e.preventDefault();
+            document.getElementById('global-search-input')?.focus();
+            break;
+          case 'd':
+            e.preventDefault();
+            setCurrentPage('dashboard');
+            break;
+          case 'w':
+            e.preventDefault();
+            setCurrentPage('workspace');
+            break;
+          case '\\':
+            e.preventDefault();
+            toggleSidebar();
+            break;
+          case 'n':
+            e.preventDefault();
+            setDecisionModalOpen(true);
+            break;
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [setCurrentPage, toggleSidebar, setDecisionModalOpen]);
   const bg = darkMode ? 'bg-[#0d1117]' : 'bg-[#f0f2ff]';
   const textBase = darkMode ? 'text-white' : 'text-gray-900';
 

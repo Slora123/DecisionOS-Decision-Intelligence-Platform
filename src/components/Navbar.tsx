@@ -46,6 +46,7 @@ export default function Navbar({ onShowShortcuts }: NavbarProps) {
       <div className="flex-1 max-w-md relative">
         <Search className={clsx('absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4', darkMode ? 'text-white/30' : 'text-gray-400')} />
         <input
+          id="global-search-input"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search decisions, templates…  ⌘K"

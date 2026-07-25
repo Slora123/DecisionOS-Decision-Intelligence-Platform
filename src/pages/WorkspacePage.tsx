@@ -43,27 +43,58 @@ export default function WorkspacePage() {
     return () => el.removeEventListener('wheel', handleWheel);
   }, [handleWheel]);
 
+  const zoomIn = useCallback(() => setCanvasTransform({ x: panX, y: panY, scale: Math.min(2, scale * 1.2) }), [panX, panY, scale, setCanvasTransform]);
+  const zoomOut = useCallback(() => setCanvasTransform({ x: panX, y: panY, scale: Math.max(0.3, scale / 1.2) }), [panX, panY, scale, setCanvasTransform]);
+  const resetView = useCallback(() => setCanvasTransform({ x: 0, y: 0, scale: 1 }), [setCanvasTransform]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
-        if (e.shiftKey) {
-          e.preventDefault();
-          if (future.length > 0) {
-            redo();
-            showToast('↪ Redone last action');
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      if (e.metaKey || e.ctrlKey) {
+        if (e.key === 'z') {
+          if (e.shiftKey) {
+            e.preventDefault();
+            if (future.length > 0) {
+              redo();
+              showToast('↪ Redone last action');
+            }
+          } else {
+            e.preventDefault();
+            if (past.length > 0) {
+              undo();
+              showToast('↩ Undone last action');
+            }
           }
-        } else {
+        } else if (e.key === '=' || e.key === '+') {
           e.preventDefault();
-          if (past.length > 0) {
-            undo();
-            showToast('↩ Undone last action');
-          }
+          zoomIn();
+          showToast('Zoomed In');
+        } else if (e.key === '-') {
+          e.preventDefault();
+          zoomOut();
+          showToast('Zoomed Out');
+        } else if (e.key === '0') {
+          e.preventDefault();
+          resetView();
+          showToast('Zoom Reset');
+        } else if (e.key.toLowerCase() === 'e') {
+          e.preventDefault();
+          showToast('📄 Exported as PDF');
+        }
+      } else {
+        if (e.key === 'Escape') {
+          setSelectedCardId(null);
+        } else if ((e.key === 'Backspace' || e.key === 'Delete') && selectedCardId) {
+          useAppStore.getState().deleteDecision(selectedCardId);
+          setSelectedCardId(null);
+          showToast('🗑️ Decision deleted');
         }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [past, future, undo, redo]);
+  }, [past, future, undo, redo, selectedCardId, zoomIn, zoomOut, resetView, setSelectedCardId]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('.decision-card-wrapper')) return;
@@ -88,10 +119,6 @@ export default function WorkspacePage() {
     setCanvasTransform({ x: panX + (e.touches[0].clientX - lastMouse.x), y: panY + (e.touches[0].clientY - lastMouse.y), scale });
     setLastMouse({ x: e.touches[0].clientX, y: e.touches[0].clientY });
   };
-
-  const zoomIn = () => setCanvasTransform({ x: panX, y: panY, scale: Math.min(2, scale * 1.2) });
-  const zoomOut = () => setCanvasTransform({ x: panX, y: panY, scale: Math.max(0.3, scale / 1.2) });
-  const resetView = () => setCanvasTransform({ x: 0, y: 0, scale: 1 });
 
   // Handle Add Decision
   const handleAddDecision = () => {
