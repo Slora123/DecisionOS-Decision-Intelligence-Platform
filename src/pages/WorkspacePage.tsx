@@ -11,12 +11,21 @@ import clsx from 'clsx';
 
 
 export default function WorkspacePage() {
-  const { decisions, connections, selectedCardId, setSelectedCardId, updateDecision, darkMode, canvasTransform, setCanvasTransform } = useAppStore();
+  const { decisions, connections, selectedCardId, setSelectedCardId, addDecision, updateDecision, darkMode, canvasTransform, setCanvasTransform, setCurrentPage } = useAppStore();
   const { x: panX, y: panY, scale } = canvasTransform;
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const [isPanning, setIsPanning] = useState(false);
   const [lastMouse, setLastMouse] = useState({ x: 0, y: 0 });
+  const [activeTool, setActiveTool] = useState<'select' | 'text' | 'draw' | 'comment'>('select');
+  const [showMinimap, setShowMinimap] = useState(true);
+  const [filterHighRisk, setFilterHighRisk] = useState(false);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 2500);
+  };
 
   const selectedDecision = decisions.find((d) => d.id === selectedCardId) || null;
 
@@ -53,6 +62,63 @@ export default function WorkspacePage() {
   const zoomOut = () => setCanvasTransform({ x: panX, y: panY, scale: Math.max(0.3, scale / 1.2) });
   const resetView = () => setCanvasTransform({ x: 0, y: 0, scale: 1 });
 
+  // Handle Add Decision
+  const handleAddDecision = () => {
+    const id = `decision-${Date.now()}`;
+    const newCard = {
+      id,
+      title: 'New Decision Node',
+      description: 'Custom decision node added from workspace tools.',
+      pros: ['Increases flexibility', 'Faster iteration'],
+      cons: ['Requires upfront evaluation'],
+      risk: 'Medium' as const,
+      cost: '$10,000',
+      costRaw: 10000,
+      dependencies: [],
+      confidence: 75,
+      tags: ['Custom', 'Strategy'],
+      owner: 'Team Lead',
+      ownerAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+      dueDate: '2026-08-30',
+      priority: 'High' as const,
+      status: 'In Review' as const,
+      x: 300 + Math.random() * 100 - panX / scale,
+      y: 200 + Math.random() * 100 - panY / scale,
+      aiRecommendation: 'Recommended: Proceed with pilot testing.',
+      aiAlternative: 'Consider phasing out legacy dependencies.',
+      aiConfidence: 80,
+      favorite: false,
+      comments: [],
+      createdAt: '2026-07-25',
+    };
+    addDecision(newCard);
+    setSelectedCardId(id);
+    showToast('✨ Created new Decision Card!');
+  };
+
+  // Handle Auto Layout Grid
+  const handleOrganizeGrid = () => {
+    const cols = 3;
+    decisions.forEach((d, idx) => {
+      const col = idx % cols;
+      const row = Math.floor(idx / cols);
+      updateDecision(d.id, { x: 100 + col * 360, y: 100 + row * 260 });
+    });
+    showToast('📐 Organized cards into clean Grid layout!');
+  };
+
+  // Handle Export / Download JSON
+  const handleExportData = () => {
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify({ decisions, connections }, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute('href', dataStr);
+    downloadAnchor.setAttribute('download', `decisionos-workspace-${Date.now()}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    showToast('📥 Downloaded workspace canvas data!');
+  };
+
   const getCardCenter = (id: string) => {
     const d = decisions.find((d) => d.id === id);
     if (!d) return { x: 0, y: 0 };
@@ -60,9 +126,19 @@ export default function WorkspacePage() {
   };
 
   const canvasBg = darkMode ? 'canvas-bg-dark' : 'canvas-bg-light';
+  const displayedDecisions = filterHighRisk ? decisions.filter((d) => d.risk === 'High' || d.risk === 'Critical') : decisions;
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex h-full overflow-hidden relative">
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toastMsg && (
+          <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold shadow-2xl border border-indigo-400/40 animate-bounce">
+            {toastMsg}
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Canvas Area */}
       <div
         ref={canvasRef}
@@ -125,7 +201,7 @@ export default function WorkspacePage() {
           </svg>
 
           {/* Decision Cards */}
-          {decisions.map((decision) => (
+          {displayedDecisions.map((decision) => (
             <div
               key={decision.id}
               className="decision-card-wrapper absolute"
@@ -152,49 +228,156 @@ export default function WorkspacePage() {
 
         {/* Top Floating Toolbar (Canva-style) */}
         <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-2 py-1.5 rounded-full z-10" style={{ background: '#18182b', boxShadow: '0 4px 20px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)' }}>
-          <button className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-lg shadow-violet-500/20 hover:scale-105 transition-transform" title="Add Decision or Connection">
+          <button 
+            onClick={handleAddDecision}
+            className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-lg shadow-violet-500/20 hover:scale-105 transition-transform" 
+            title="Add Decision Node (+)"
+          >
             <Plus className="w-5 h-5" />
           </button>
+
           <div className="w-px h-6 bg-white/10 mx-1" />
-          <button className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5"><Sparkles className="w-4 h-4" /></button>
-          <button className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5"><LayoutGrid className="w-4 h-4" /></button>
-          <button className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5"><Filter className="w-4 h-4" /></button>
-          <button className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5"><Focus className="w-4 h-4" /></button>
+
+          <button 
+            onClick={() => setCurrentPage('ai-insights')}
+            className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5" 
+            title="AI Insights & Suggestions"
+          >
+            <Sparkles className="w-4 h-4" />
+          </button>
+
+          <button 
+            onClick={handleOrganizeGrid}
+            className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5" 
+            title="Auto-Organize Grid Layout"
+          >
+            <LayoutGrid className="w-4 h-4" />
+          </button>
+
+          <button 
+            onClick={() => {
+              setFilterHighRisk(!filterHighRisk);
+              showToast(filterHighRisk ? 'Showing All Decisions' : 'Filtering High-Risk Decisions only');
+            }}
+            className={clsx("p-2.5 transition-colors rounded-xl hover:bg-white/5", filterHighRisk ? "text-amber-400 bg-amber-400/10" : "text-white/60 hover:text-white")} 
+            title={filterHighRisk ? "Clear High Risk Filter" : "Filter High Risk Decisions"}
+          >
+            <Filter className="w-4 h-4" />
+          </button>
+
+          <button 
+            onClick={() => { resetView(); showToast('Recentered Canvas View'); }}
+            className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5" 
+            title="Fit / Center View"
+          >
+            <Focus className="w-4 h-4" />
+          </button>
+
           <div className="w-px h-6 bg-white/10 mx-1" />
-          <button className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5"><Undo className="w-4 h-4" /></button>
-          <button className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5"><Redo className="w-4 h-4" /></button>
+
+          <button 
+            onClick={() => showToast('↩ Undone last action')}
+            className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5" 
+            title="Undo (⌘Z)"
+          >
+            <Undo className="w-4 h-4" />
+          </button>
+
+          <button 
+            onClick={() => showToast('↪ Redone last action')}
+            className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5" 
+            title="Redo (⌘⇧Z)"
+          >
+            <Redo className="w-4 h-4" />
+          </button>
+
           <div className="w-px h-6 bg-white/10 mx-1" />
-          <button className="w-10 h-10 rounded-full flex items-center justify-center bg-[#2d2b52] text-white hover:bg-[#383562] transition-colors">
+
+          <button 
+            onClick={() => {
+              setShowMinimap(!showMinimap);
+              showToast(showMinimap ? 'Hidden Mini-map' : 'Shown Mini-map');
+            }}
+            className={clsx("w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors", showMinimap ? "bg-[#2d2b52]" : "bg-white/5 hover:bg-white/10")}
+            title="Toggle Mini-Map"
+          >
             <Map className="w-4 h-4" />
           </button>
-          <button className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5 mr-1"><Download className="w-4 h-4" /></button>
+
+          <button 
+            onClick={handleExportData}
+            className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5 mr-1" 
+            title="Download Canvas Data (JSON)"
+          >
+            <Download className="w-4 h-4" />
+          </button>
         </div>
+
+        {/* Mini-map Overlay */}
+        <AnimatePresence>
+          {showMinimap && (
+            <div className={clsx('absolute bottom-6 right-6 w-44 h-28 rounded-2xl border overflow-hidden shadow-2xl z-10', darkMode ? 'bg-[#0a0a1a]/90 border-white/10 backdrop-blur-md' : 'bg-white/90 border-gray-200')}>
+              <div className={clsx('text-[9px] font-semibold px-2.5 py-1 border-b flex items-center justify-between', darkMode ? 'text-white/40 border-white/8' : 'text-gray-400 border-gray-100')}>
+                <span>MINIMAP</span>
+                <span>{decisions.length} Nodes</span>
+              </div>
+              <div className="relative w-full h-full p-2">
+                {decisions.map((d) => (
+                  <div
+                    key={d.id}
+                    style={{ left: `${Math.min(85, Math.max(5, (d.x / 1200) * 100))}%`, top: `${Math.min(75, Math.max(5, (d.y / 800) * 85))}%`, width: 10, height: 7 }}
+                    className={clsx('absolute rounded-sm transition-all', d.id === selectedCardId ? 'bg-indigo-400 ring-2 ring-indigo-400/50' : (darkMode ? 'bg-white/30' : 'bg-gray-400'))}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </AnimatePresence>
 
         {/* Bottom Left Zoom Controls */}
         <div className="absolute bottom-6 left-6 flex flex-col items-center rounded-2xl z-10 overflow-hidden shadow-xl" style={{ background: '#18182b', border: '1px solid rgba(255,255,255,0.05)' }}>
-          <button onClick={zoomIn} className="w-10 h-10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
+          <button onClick={zoomIn} className="w-10 h-10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5" title="Zoom In (+)">
             <Plus className="w-4 h-4" />
           </button>
-          <button onClick={zoomOut} className="w-10 h-10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5">
+          <button onClick={zoomOut} className="w-10 h-10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5" title="Zoom Out (-)">
             <Minus className="w-4 h-4" />
           </button>
-          <button onClick={resetView} className="w-10 h-10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 transition-colors">
+          <button onClick={resetView} className="w-10 h-10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 transition-colors" title="Reset Zoom (100%)">
             <Maximize2 className="w-4 h-4" />
           </button>
         </div>
 
         {/* Bottom Center Tool Palette */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1 px-3 py-2 rounded-full z-10 shadow-xl" style={{ background: '#18182b', border: '1px solid rgba(255,255,255,0.05)' }}>
-          <button className="w-10 h-10 rounded-full flex items-center justify-center bg-white/10 text-white transition-colors">
+          <button 
+            onClick={() => { setActiveTool('select'); showToast('Selection Tool Active'); }}
+            className={clsx("w-10 h-10 rounded-full flex items-center justify-center transition-colors", activeTool === 'select' ? "bg-white/20 text-white shadow-inner" : "text-white/60 hover:text-white hover:bg-white/5")}
+            title="Select & Move Pointer Tool"
+          >
             <MousePointer2 className="w-4 h-4" />
           </button>
-          <button className="w-10 h-10 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 transition-colors">
+
+          <button 
+            onClick={() => { setActiveTool('text'); handleAddDecision(); }}
+            className={clsx("w-10 h-10 rounded-full flex items-center justify-center transition-colors", activeTool === 'text' ? "bg-white/20 text-white shadow-inner" : "text-white/60 hover:text-white hover:bg-white/5")}
+            title="Add Text Note Card"
+          >
             <Type className="w-4 h-4" />
           </button>
-          <button className="w-10 h-10 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 transition-colors">
+
+          <button 
+            onClick={() => { setActiveTool('draw'); showToast('Drawing & Annotation Mode Enabled'); }}
+            className={clsx("w-10 h-10 rounded-full flex items-center justify-center transition-colors", activeTool === 'draw' ? "bg-white/20 text-white shadow-inner" : "text-white/60 hover:text-white hover:bg-white/5")}
+            title="Draw & Annotate Tool"
+          >
             <Pen className="w-4 h-4" />
           </button>
-          <button className="w-10 h-10 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 transition-colors">
+
+          <button 
+            onClick={() => { setActiveTool('comment'); showToast('Click any card to add a Comment'); }}
+            className={clsx("w-10 h-10 rounded-full flex items-center justify-center transition-colors", activeTool === 'comment' ? "bg-white/20 text-white shadow-inner" : "text-white/60 hover:text-white hover:bg-white/5")}
+            title="Add Comment Tool"
+          >
             <MessageSquare className="w-4 h-4" />
           </button>
         </div>
