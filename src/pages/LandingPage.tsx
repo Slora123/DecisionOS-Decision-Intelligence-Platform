@@ -52,7 +52,7 @@ function SplashLoader({ onDone }: { onDone: () => void }) {
           </AnimatePresence>
 
           {/* Main content */}
-          <div className="relative flex items-center gap-4 md:gap-8">
+          <div className="relative flex items-center gap-2 md:gap-8">
             {/* Logo icon */}
             <AnimatePresence>
               {step >= 1 && (
@@ -72,7 +72,7 @@ function SplashLoader({ onDone }: { onDone: () => void }) {
                   <img
                     src={logoSrc}
                     alt="DecisionOS"
-                    className="w-24 h-24 md:w-[180px] md:h-[180px]"
+                    className="w-16 h-16 md:w-[180px] md:h-[180px]"
                     style={{
                       objectFit: 'contain',
                       filter: 'drop-shadow(0 0 24px rgba(99,102,241,0.8))',
@@ -92,7 +92,7 @@ function SplashLoader({ onDone }: { onDone: () => void }) {
                   className="relative overflow-hidden"
                 >
                   <div
-                    className="text-white select-none text-5xl md:text-[72px]"
+                    className="text-white select-none text-3xl md:text-[72px]"
                     style={{
                       fontWeight: 900,
                       letterSpacing: '-0.03em',
@@ -133,9 +133,9 @@ function SplashLoader({ onDone }: { onDone: () => void }) {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.15 }}
-                className="absolute bottom-[28%] flex flex-col items-center gap-4"
+                className="absolute bottom-[28%] flex flex-col items-center gap-4 w-full px-4"
               >
-                <div className="text-white/40 text-sm tracking-[0.3em] uppercase font-medium">
+                <div className="text-white/40 text-xs md:text-sm tracking-widest md:tracking-[0.3em] uppercase font-medium text-center">
                   Decision Intelligence Platform
                 </div>
                 <div className="flex items-center gap-2">
