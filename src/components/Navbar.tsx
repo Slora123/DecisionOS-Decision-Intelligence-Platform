@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Sun, Moon, Bell, Keyboard, Plus, X } from 'lucide-react';
+import { Search, Sun, Moon, Bell, Keyboard, Plus, X, Menu } from 'lucide-react';
 import clsx from 'clsx';
 
 interface NavbarProps {
@@ -9,7 +9,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ onShowShortcuts }: NavbarProps) {
-  const { darkMode, toggleDarkMode, searchQuery, setSearchQuery, notifications, clearNotifications, currentPage, setCurrentPage } = useAppStore();
+  const { darkMode, toggleDarkMode, searchQuery, setSearchQuery, notifications, clearNotifications, currentPage, setCurrentPage, toggleMobileMenu } = useAppStore();
   const [showNotif, setShowNotif] = useState(false);
 
   const unread = notifications.filter((n) => !n.read).length;
@@ -26,9 +26,16 @@ export default function Navbar({ onShowShortcuts }: NavbarProps) {
   const typeColor = { info: 'bg-indigo-500', success: 'bg-emerald-500', warning: 'bg-amber-500' };
 
   return (
-    <header className={clsx('flex items-center gap-4 px-6 py-3 border-b shrink-0 transition-colors duration-300 z-20', bg, border)}>
+    <header className={clsx('flex items-center gap-2 md:gap-4 px-4 md:px-6 py-3 border-b shrink-0 transition-colors duration-300 z-20', bg, border)}>
+      <button 
+        onClick={toggleMobileMenu}
+        className={clsx('md:hidden p-2 -ml-2 rounded-xl transition-colors', darkMode ? 'hover:bg-white/10 text-white' : 'hover:bg-gray-100 text-gray-800')}
+      >
+        <Menu className="w-5 h-5" />
+      </button>
+
       {/* Page title */}
-      <div className="mr-2">
+      <div className="mr-2 hidden sm:block">
         <h1 className="text-base font-bold tracking-tight">{titles[currentPage] || 'DecisionOS'}</h1>
         <p className={clsx('text-xs', darkMode ? 'text-white/40' : 'text-gray-400')}>
           {currentPage === 'workspace' ? '6 active decisions' : 'Decision Intelligence Platform'}

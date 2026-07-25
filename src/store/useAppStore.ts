@@ -12,6 +12,10 @@ interface AppState {
   sidebarCollapsed: boolean;
   toggleSidebar: () => void;
 
+  mobileMenuOpen: boolean;
+  toggleMobileMenu: () => void;
+  setMobileMenuOpen: (open: boolean) => void;
+
   decisions: DecisionCard[];
   addDecision: (d: DecisionCard) => void;
   updateDecision: (id: string, updates: Partial<DecisionCard>) => void;
@@ -61,6 +65,10 @@ export const useAppStore = create<AppState>((set) => ({
 
   sidebarCollapsed: false,
   toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
+
+  mobileMenuOpen: false,
+  toggleMobileMenu: () => set((s) => ({ mobileMenuOpen: !s.mobileMenuOpen })),
+  setMobileMenuOpen: (open) => set({ mobileMenuOpen: open }),
 
   decisions: mockDecisions,
   addDecision: (d) => set((s) => ({ decisions: [...s.decisions, d] })),

@@ -18,7 +18,7 @@ const NAV_ITEMS = [
 ];
 
 export default function Sidebar() {
-  const { currentPage, setCurrentPage, sidebarCollapsed, toggleSidebar, darkMode } = useAppStore();
+  const { currentPage, setCurrentPage, sidebarCollapsed, toggleSidebar, darkMode, mobileMenuOpen, setMobileMenuOpen } = useAppStore();
 
   const bg = darkMode
     ? 'bg-[#0a0a1a] border-white/8'
@@ -32,11 +32,30 @@ export default function Sidebar() {
     : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50';
 
   return (
-    <motion.aside
-      animate={{ width: sidebarCollapsed ? 64 : 220 }}
-      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-      className={clsx('flex flex-col border-r shrink-0 relative overflow-visible transition-colors duration-300', bg)}
-    >
+    <>
+      {/* Mobile overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setMobileMenuOpen(false)}
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      <motion.aside
+        animate={{ width: sidebarCollapsed ? 64 : 220 }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        className={clsx(
+          'flex flex-col border-r shrink-0 relative overflow-visible transition-colors duration-300 z-50 h-full',
+          'fixed md:relative top-0 left-0 transition-transform duration-300',
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+          bg
+        )}
+      >
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-current/8">
         <img
@@ -132,5 +151,6 @@ export default function Sidebar() {
         {sidebarCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
       </button>
     </motion.aside>
+    </>
   );
 }
