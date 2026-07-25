@@ -10,7 +10,7 @@ interface MainLayoutProps {
 }
 
 export default function MainLayout({ children, onShowShortcuts }: MainLayoutProps) {
-  const { darkMode } = useAppStore();
+  const { darkMode, currentPage } = useAppStore();
   const bg = darkMode ? 'bg-[#0d1117]' : 'bg-[#f0f2ff]';
   const textBase = darkMode ? 'text-white' : 'text-gray-900';
 
@@ -22,7 +22,7 @@ export default function MainLayout({ children, onShowShortcuts }: MainLayoutProp
         <main className="flex-1 overflow-auto">
           <AnimatePresence mode="wait">
             <motion.div
-              key={useAppStore.getState().currentPage}
+              key={currentPage}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
