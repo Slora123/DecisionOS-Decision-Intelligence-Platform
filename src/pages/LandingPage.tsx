@@ -210,8 +210,8 @@ export default function LandingPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            /* Full viewport, no scrolling */
-            className="h-screen w-full animated-bg relative overflow-hidden flex flex-col"
+            /* Full viewport, allows scrolling if needed on mobile */
+            className="min-h-screen w-full animated-bg relative overflow-x-hidden flex flex-col"
           >
             {/* Animated background blobs */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
