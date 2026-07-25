@@ -11,7 +11,7 @@ interface MainLayoutProps {
 }
 
 export default function MainLayout({ children, onShowShortcuts }: MainLayoutProps) {
-  const { darkMode, currentPage } = useAppStore();
+  const { darkMode, currentPage, globalToastMsg } = useAppStore();
   const bg = darkMode ? 'bg-[#0d1117]' : 'bg-[#f0f2ff]';
   const textBase = darkMode ? 'text-white' : 'text-gray-900';
 
@@ -37,14 +37,14 @@ export default function MainLayout({ children, onShowShortcuts }: MainLayoutProp
       </div>
       <NewDecisionModal />
       <AnimatePresence>
-        {useAppStore().globalToastMsg && (
+        {globalToastMsg && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-600/30"
           >
-            {useAppStore().globalToastMsg}
+            {globalToastMsg}
           </motion.div>
         )}
       </AnimatePresence>
