@@ -334,7 +334,7 @@ export default function WorkspacePage() {
         {/* Mini-map Overlay */}
         <AnimatePresence>
           {showMinimap && (
-            <div className={clsx('absolute bottom-6 right-6 w-44 h-28 rounded-2xl border overflow-hidden shadow-2xl z-10', darkMode ? 'bg-[#0a0a1a]/90 border-white/10 backdrop-blur-md' : 'bg-white/90 border-gray-200')}>
+            <div className={clsx('hidden md:block absolute bottom-6 right-6 w-44 h-28 rounded-2xl border overflow-hidden shadow-2xl z-10', darkMode ? 'bg-[#0a0a1a]/90 border-white/10 backdrop-blur-md' : 'bg-white/90 border-gray-200')}>
               <div className={clsx('text-[9px] font-semibold px-2.5 py-1 border-b flex items-center justify-between', darkMode ? 'text-white/40 border-white/8' : 'text-gray-400 border-gray-100')}>
                 <span>MINIMAP</span>
                 <span>{decisions.length} Nodes</span>
@@ -353,7 +353,7 @@ export default function WorkspacePage() {
         </AnimatePresence>
 
         {/* Bottom Left Zoom Controls */}
-        <div className="absolute bottom-6 left-6 flex flex-col items-center rounded-2xl z-10 overflow-hidden shadow-xl" style={{ background: '#18182b', border: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="absolute bottom-24 md:bottom-6 left-4 md:left-6 flex flex-col items-center rounded-2xl z-10 overflow-hidden shadow-xl" style={{ background: '#18182b', border: '1px solid rgba(255,255,255,0.05)' }}>
           <button onClick={zoomIn} className="w-10 h-10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5" title="Zoom In (+)">
             <Plus className="w-4 h-4" />
           </button>

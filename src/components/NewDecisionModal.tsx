@@ -141,8 +141,8 @@ export default function NewDecisionModal() {
         </div>
 
         <div className="p-6 overflow-y-auto space-y-6">
-          <div className="grid grid-cols-3 gap-4">
-            <div className="col-span-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
               <label className={clsx('block text-xs font-bold mb-1.5', labelColor)}>Decision Title *</label>
               <input
                 ref={titleRef}
@@ -184,10 +184,10 @@ export default function NewDecisionModal() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className={clsx('block text-xs font-bold mb-2', labelColor)}>Accent Color</label>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 {PRESET_COLORS.map(c => (
                   <button
                     key={c}
@@ -202,7 +202,7 @@ export default function NewDecisionModal() {
             </div>
             <div>
               <label className={clsx('block text-xs font-bold mb-2', labelColor)}>Node Icon</label>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 {PRESET_ICONS.map(pi => (
                   <button
                     key={pi.id}
@@ -219,7 +219,7 @@ export default function NewDecisionModal() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className={clsx('block text-xs font-bold mb-1.5', labelColor)}>Priority</label>
               <select
@@ -272,7 +272,7 @@ export default function NewDecisionModal() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className={clsx('block text-xs font-bold mb-1.5', labelColor)}>Owner</label>
               <input

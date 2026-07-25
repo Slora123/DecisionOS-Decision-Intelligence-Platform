@@ -309,7 +309,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.42 }}
-                className="grid grid-cols-4 gap-3 max-w-2xl w-full"
+                className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-2xl w-full"
               >
                 {[
                   { icon: Layers, label: 'Infinite Canvas', desc: 'Zoom & pan' },

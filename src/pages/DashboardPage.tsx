@@ -69,7 +69,7 @@ export default function DashboardPage() {
       </motion.div>
 
       {/* KPI Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Total Decisions" value="117" delta="+12%" color="indigo" icon={Network} />
         <StatCard label="Avg Confidence" value="82%" delta="+5pts" color="purple" icon={Target} />
         <StatCard label="Success Rate" value="87%" delta="+3%" color="emerald" icon={CheckCircle} />

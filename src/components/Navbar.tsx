@@ -65,14 +65,14 @@ export default function Navbar({ onShowShortcuts }: NavbarProps) {
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm font-semibold shadow-lg shadow-indigo-500/25"
         >
           <Plus className="w-4 h-4" />
-          New Decision
+          <span className="hidden sm:inline">New Decision</span>
         </motion.button>
 
         {/* Keyboard shortcuts */}
         <button
           onClick={onShowShortcuts}
           title="Keyboard Shortcuts"
-          className={clsx('w-9 h-9 rounded-xl flex items-center justify-center border transition-all', darkMode ? 'border-white/10 text-white/50 hover:text-white hover:bg-white/8' : 'border-gray-200 text-gray-400 hover:text-gray-700 hover:bg-gray-50')}
+          className={clsx('w-9 h-9 rounded-xl hidden sm:flex items-center justify-center border transition-all', darkMode ? 'border-white/10 text-white/50 hover:text-white hover:bg-white/8' : 'border-gray-200 text-gray-400 hover:text-gray-700 hover:bg-gray-50')}
         >
           <Keyboard className="w-4 h-4" />
         </button>
