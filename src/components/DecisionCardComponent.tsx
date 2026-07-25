@@ -1,8 +1,16 @@
 import { motion } from 'framer-motion';
 import { useAppStore } from '../store/useAppStore';
 import type { DecisionCard } from '../types';
-import { CheckCircle2, XCircle, AlertTriangle, Star, Trash2 } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertTriangle, Star, Trash2, Lightbulb, TrendingUp, Rocket, Briefcase, Settings } from 'lucide-react';
 import clsx from 'clsx';
+
+const ICON_MAP: Record<string, React.ElementType> = {
+  lightbulb: Lightbulb,
+  trending: TrendingUp,
+  rocket: Rocket,
+  briefcase: Briefcase,
+  settings: Settings
+};
 
 interface DecisionCardProps {
   decision: DecisionCard;
@@ -147,8 +155,12 @@ export default function DecisionCardComponent({ decision, isSelected, onClick, s
         isSelected ? p.borderSel : p.border,
       )}
     >
-      {/* Top gradient bar */}
-      <div className={clsx('h-1.5 rounded-t-2xl bg-gradient-to-r', p.gradient)} />
+      {/* Top gradient bar OR custom color */}
+      {decision.color ? (
+        <div className="h-1.5 rounded-t-2xl" style={{ backgroundColor: decision.color }} />
+      ) : (
+        <div className={clsx('h-1.5 rounded-t-2xl bg-gradient-to-r', p.gradient)} />
+      )}
 
       {/* Subtle inner glow */}
       <div
@@ -161,12 +173,19 @@ export default function DecisionCardComponent({ decision, isSelected, onClick, s
         <div className="flex items-start justify-between gap-2 mb-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1.5">
-              <span className={clsx('text-[10px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wide', p.badge)}>
+              <span className={clsx('text-[10px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wide', p.badge)} style={decision.color ? { backgroundColor: `${decision.color}33`, borderColor: `${decision.color}66`, color: decision.color } : {}}>
                 {decision.priority}
               </span>
               {decision.favorite && <Star className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />}
             </div>
-            <h3 className={clsx('font-bold text-sm leading-snug', p.title)}>{decision.title}</h3>
+            <div className="flex items-center gap-2">
+              {decision.icon && ICON_MAP[decision.icon] && (
+                <div style={{ color: decision.color || p.accent }}>
+                  {(() => { const Icon = ICON_MAP[decision.icon]; return <Icon className="w-4 h-4" />; })()}
+                </div>
+              )}
+              <h3 className={clsx('font-bold text-sm leading-snug', p.title)}>{decision.title}</h3>
+            </div>
           </div>
           <div className="flex gap-1 shrink-0">
             <button

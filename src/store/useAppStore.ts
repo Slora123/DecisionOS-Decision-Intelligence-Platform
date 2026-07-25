@@ -21,6 +21,12 @@ interface AppState {
   toggleMobileMenu: () => void;
   setMobileMenuOpen: (open: boolean) => void;
 
+  isNewDecisionModalOpen: boolean;
+  setDecisionModalOpen: (open: boolean) => void;
+
+  globalToastMsg: string | null;
+  setGlobalToastMsg: (msg: string | null) => void;
+
   decisions: DecisionCard[];
   addDecision: (d: DecisionCard) => void;
   updateDecision: (id: string, updates: Partial<DecisionCard>) => void;
@@ -78,8 +84,19 @@ export const useAppStore = create<AppState>((set, get) => ({
   toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 
   mobileMenuOpen: false,
-  toggleMobileMenu: () => set((s) => ({ mobileMenuOpen: !s.mobileMenuOpen })),
+  toggleMobileMenu: () => set((state) => ({ mobileMenuOpen: !state.mobileMenuOpen })),
   setMobileMenuOpen: (open) => set({ mobileMenuOpen: open }),
+
+  isNewDecisionModalOpen: false,
+  setDecisionModalOpen: (open) => set({ isNewDecisionModalOpen: open }),
+
+  globalToastMsg: null,
+  setGlobalToastMsg: (msg) => {
+    set({ globalToastMsg: msg });
+    if (msg) {
+      setTimeout(() => set({ globalToastMsg: null }), 2500);
+    }
+  },
 
   past: [],
   future: [],

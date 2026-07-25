@@ -11,7 +11,7 @@ import clsx from 'clsx';
 
 
 export default function WorkspacePage() {
-  const { decisions, connections, selectedCardId, setSelectedCardId, addDecision, updateDecision, darkMode, canvasTransform, setCanvasTransform, setCurrentPage, past, future, undo, redo } = useAppStore();
+  const { decisions, connections, selectedCardId, setSelectedCardId, addDecision, updateDecision, darkMode, canvasTransform, setCanvasTransform, setCurrentPage, past, future, undo, redo, setGlobalToastMsg } = useAppStore();
   const { x: panX, y: panY, scale } = canvasTransform;
 
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -20,11 +20,8 @@ export default function WorkspacePage() {
   const [activeTool, setActiveTool] = useState<'select' | 'text' | 'draw' | 'comment'>('select');
   const [showMinimap, setShowMinimap] = useState(true);
   const [filterHighRisk, setFilterHighRisk] = useState(false);
-  const [toastMsg, setToastMsg] = useState<string | null>(null);
-
   const showToast = (msg: string) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(null), 2500);
+    setGlobalToastMsg(msg);
   };
 
   const selectedDecision = decisions.find((d) => d.id === selectedCardId) || null;
@@ -152,15 +149,6 @@ export default function WorkspacePage() {
 
   return (
     <div className="flex h-full overflow-hidden relative">
-      {/* Toast Notification */}
-      <AnimatePresence>
-        {toastMsg && (
-          <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold shadow-2xl border border-indigo-400/40 animate-bounce">
-            {toastMsg}
-          </div>
-        )}
-      </AnimatePresence>
-
       {/* Canvas Area */}
       <div
         ref={canvasRef}

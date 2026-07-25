@@ -19,6 +19,8 @@ export interface DecisionCard {
   dueDate: string;
   priority: Priority;
   status: Status;
+  color?: string;
+  icon?: string;
   x: number;
   y: number;
   aiRecommendation: string;

@@ -58,7 +58,10 @@ export default function Navbar({ onShowShortcuts }: NavbarProps) {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => setCurrentPage('workspace')}
+          onClick={() => {
+            setCurrentPage('workspace');
+            useAppStore.getState().setDecisionModalOpen(true);
+          }}
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm font-semibold shadow-lg shadow-indigo-500/25"
         >
           <Plus className="w-4 h-4" />
