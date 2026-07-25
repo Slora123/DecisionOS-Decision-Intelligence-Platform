@@ -50,7 +50,7 @@ export default function Sidebar() {
         animate={{ width: sidebarCollapsed ? 64 : 220 }}
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className={clsx(
-          'flex flex-col border-r shrink-0 relative overflow-visible transition-colors duration-300 z-50 h-full',
+          'flex flex-col border-r shrink-0 overflow-visible transition-colors duration-300 z-50 h-full',
           'fixed md:relative top-0 left-0 transition-transform duration-300',
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
           bg

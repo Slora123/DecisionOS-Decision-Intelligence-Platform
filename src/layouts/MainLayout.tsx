@@ -16,7 +16,7 @@ export default function MainLayout({ children, onShowShortcuts }: MainLayoutProp
   const textBase = darkMode ? 'text-white' : 'text-gray-900';
 
   return (
-    <div className={`flex h-screen w-screen overflow-hidden ${bg} ${textBase} transition-colors duration-300`}>
+    <div className={`flex h-screen w-full overflow-hidden ${bg} ${textBase} transition-colors duration-300`}>
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar onShowShortcuts={onShowShortcuts} />

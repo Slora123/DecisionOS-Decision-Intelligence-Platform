@@ -52,7 +52,7 @@ function SplashLoader({ onDone }: { onDone: () => void }) {
           </AnimatePresence>
 
           {/* Main content */}
-          <div className="relative flex items-center gap-8">
+          <div className="relative flex items-center gap-4 md:gap-8">
             {/* Logo icon */}
             <AnimatePresence>
               {step >= 1 && (
@@ -72,8 +72,8 @@ function SplashLoader({ onDone }: { onDone: () => void }) {
                   <img
                     src={logoSrc}
                     alt="DecisionOS"
+                    className="w-24 h-24 md:w-[180px] md:h-[180px]"
                     style={{
-                      width: 180, height: 180,
                       objectFit: 'contain',
                       filter: 'drop-shadow(0 0 24px rgba(99,102,241,0.8))',
                     }}
@@ -92,9 +92,8 @@ function SplashLoader({ onDone }: { onDone: () => void }) {
                   className="relative overflow-hidden"
                 >
                   <div
-                    className="text-white select-none"
+                    className="text-white select-none text-5xl md:text-[72px]"
                     style={{
-                      fontSize: 72,
                       fontWeight: 900,
                       letterSpacing: '-0.03em',
                       lineHeight: 1,
@@ -212,7 +211,7 @@ export default function LandingPage() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             /* Full viewport, no scrolling */
-            className="h-screen w-screen animated-bg relative overflow-hidden flex flex-col"
+            className="h-screen w-full animated-bg relative overflow-hidden flex flex-col"
           >
             {/* Animated background blobs */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -227,13 +226,13 @@ export default function LandingPage() {
             <div className="absolute inset-0 dot-grid opacity-25" />
 
             {/* Nav */}
-            <nav className="relative z-10 flex items-center justify-between px-8 py-4 shrink-0">
+            <nav className="relative z-10 flex items-center justify-between px-4 md:px-8 py-4 shrink-0">
               <div className="flex items-center gap-3">
                 <img src={logoSrc} alt="DecisionOS" className="w-10 h-10 object-contain" style={{ filter: 'drop-shadow(0 0 8px rgba(99,102,241,0.6))' }} />
                 <span className="text-white font-bold text-xl tracking-tight font-['Plus_Jakarta_Sans']">DecisionOS</span>
               </div>
-              <div className="flex items-center gap-4">
-                <span className="text-white/50 text-sm">v2.0 · Beta</span>
+              <div className="flex items-center gap-2 md:gap-4">
+                <span className="hidden sm:inline text-white/50 text-sm">v2.0 · Beta</span>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
