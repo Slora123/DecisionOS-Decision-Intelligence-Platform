@@ -265,7 +265,7 @@ export default function WorkspacePage() {
           <div className="w-px h-6 bg-white/10 mx-1" />
 
           <button 
-            onClick={() => setCurrentPage('ai-insights')}
+            onClick={() => setCurrentPage('insights')}
             className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5" 
             title="AI Insights & Suggestions"
           >
