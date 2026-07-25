@@ -62,7 +62,7 @@ export default function Sidebar() {
           src={logoSrc}
           alt="logo"
           className="w-8 h-8 object-contain shrink-0"
-          style={{ filter: 'drop-shadow(0 0 6px rgba(99,102,241,0.7))' }}
+          style={{ filter: 'invert(1) hue-rotate(180deg) brightness(1.5) drop-shadow(0 0 6px rgba(99,102,241,0.7))', mixBlendMode: 'screen' }}
         />
         <AnimatePresence>
           {!sidebarCollapsed && (

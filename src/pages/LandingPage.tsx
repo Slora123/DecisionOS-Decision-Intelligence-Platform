@@ -73,9 +73,10 @@ function SplashLoader({ onDone }: { onDone: () => void }) {
                     src={logoSrc}
                     alt="DecisionOS"
                     style={{
-                      width: 100, height: 100,
+                      width: 180, height: 180,
                       objectFit: 'contain',
-                      filter: 'brightness(1.1) drop-shadow(0 0 24px rgba(99,102,241,0.8))',
+                      filter: 'invert(1) hue-rotate(180deg) brightness(1.5) drop-shadow(0 0 24px rgba(99,102,241,0.8))',
+                      mixBlendMode: 'screen',
                     }}
                   />
                 </motion.div>
@@ -229,7 +230,7 @@ export default function LandingPage() {
             {/* Nav */}
             <nav className="relative z-10 flex items-center justify-between px-8 py-4 shrink-0">
               <div className="flex items-center gap-3">
-                <img src={logoSrc} alt="DecisionOS" className="w-9 h-9 object-contain" style={{ filter: 'drop-shadow(0 0 8px rgba(99,102,241,0.6))' }} />
+                <img src={logoSrc} alt="DecisionOS" className="w-10 h-10 object-contain" style={{ filter: 'invert(1) hue-rotate(180deg) brightness(1.5) drop-shadow(0 0 8px rgba(99,102,241,0.6))', mixBlendMode: 'screen' }} />
                 <span className="text-white font-bold text-xl tracking-tight font-['Plus_Jakarta_Sans']">DecisionOS</span>
               </div>
               <div className="flex items-center gap-4">
