@@ -11,7 +11,7 @@ import clsx from 'clsx';
 
 
 export default function WorkspacePage() {
-  const { decisions, connections, selectedCardId, setSelectedCardId, addDecision, updateDecision, darkMode, canvasTransform, setCanvasTransform, setCurrentPage } = useAppStore();
+  const { decisions, connections, selectedCardId, setSelectedCardId, addDecision, updateDecision, darkMode, canvasTransform, setCanvasTransform, setCurrentPage, past, future, undo, redo } = useAppStore();
   const { x: panX, y: panY, scale } = canvasTransform;
 
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -45,6 +45,28 @@ export default function WorkspacePage() {
     el.addEventListener('wheel', handleWheel, { passive: false });
     return () => el.removeEventListener('wheel', handleWheel);
   }, [handleWheel]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+        if (e.shiftKey) {
+          e.preventDefault();
+          if (future.length > 0) {
+            redo();
+            showToast('↪ Redone last action');
+          }
+        } else {
+          e.preventDefault();
+          if (past.length > 0) {
+            undo();
+            showToast('↩ Undone last action');
+          }
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [past, future, undo, redo]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('.decision-card-wrapper')) return;
@@ -276,16 +298,24 @@ export default function WorkspacePage() {
           <div className="w-px h-6 bg-white/10 mx-1" />
 
           <button 
-            onClick={() => showToast('↩ Undone last action')}
-            className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5" 
+            onClick={() => { undo(); showToast('↩ Undone last action'); }}
+            disabled={past.length === 0}
+            className={clsx(
+              "p-2.5 transition-colors rounded-xl", 
+              past.length > 0 ? "text-white/60 hover:text-white hover:bg-white/5" : "text-white/20 cursor-not-allowed"
+            )} 
             title="Undo (⌘Z)"
           >
             <Undo className="w-4 h-4" />
           </button>
 
           <button 
-            onClick={() => showToast('↪ Redone last action')}
-            className="p-2.5 text-white/60 hover:text-white transition-colors rounded-xl hover:bg-white/5" 
+            onClick={() => { redo(); showToast('↪ Redone last action'); }}
+            disabled={future.length === 0}
+            className={clsx(
+              "p-2.5 transition-colors rounded-xl", 
+              future.length > 0 ? "text-white/60 hover:text-white hover:bg-white/5" : "text-white/20 cursor-not-allowed"
+            )} 
             title="Redo (⌘⇧Z)"
           >
             <Redo className="w-4 h-4" />

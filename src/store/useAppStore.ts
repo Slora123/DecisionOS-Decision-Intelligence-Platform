@@ -2,6 +2,11 @@ import { create } from 'zustand';
 import type { DecisionCard, Connection } from '../types';
 import { mockDecisions, mockConnections, templatePresets } from '../data/mockData';
 
+interface HistoryState {
+  decisions: DecisionCard[];
+  connections: Connection[];
+}
+
 interface AppState {
   darkMode: boolean;
   toggleDarkMode: () => void;
@@ -38,6 +43,12 @@ interface AppState {
 
   canvasTransform: { x: number; y: number; scale: number };
   setCanvasTransform: (t: { x: number; y: number; scale: number }) => void;
+
+  past: HistoryState[];
+  future: HistoryState[];
+  saveHistory: () => void;
+  undo: () => void;
+  redo: () => void;
 }
 
 interface Notification {
@@ -56,7 +67,7 @@ const mockNotifications: Notification[] = [
   { id: '4', title: 'Comment Added', message: 'Priya commented on "Investment Plan"', time: '2h ago', read: true, type: 'info' },
 ];
 
-export const useAppStore = create<AppState>((set) => ({
+export const useAppStore = create<AppState>((set, get) => ({
   darkMode: true,
   toggleDarkMode: () => set((s) => ({ darkMode: !s.darkMode })),
 
@@ -70,21 +81,53 @@ export const useAppStore = create<AppState>((set) => ({
   toggleMobileMenu: () => set((s) => ({ mobileMenuOpen: !s.mobileMenuOpen })),
   setMobileMenuOpen: (open) => set({ mobileMenuOpen: open }),
 
+  past: [],
+  future: [],
+  saveHistory: () => set((s) => ({
+    past: [...s.past, { decisions: s.decisions, connections: s.connections }],
+    future: []
+  })),
+  undo: () => set((s) => {
+    if (s.past.length === 0) return s;
+    const previous = s.past[s.past.length - 1];
+    const newPast = s.past.slice(0, -1);
+    return {
+      past: newPast,
+      future: [...s.future, { decisions: s.decisions, connections: s.connections }],
+      decisions: previous.decisions,
+      connections: previous.connections,
+    };
+  }),
+  redo: () => set((s) => {
+    if (s.future.length === 0) return s;
+    const next = s.future[s.future.length - 1];
+    const newFuture = s.future.slice(0, -1);
+    return {
+      past: [...s.past, { decisions: s.decisions, connections: s.connections }],
+      future: newFuture,
+      decisions: next.decisions,
+      connections: next.connections,
+    };
+  }),
+
   decisions: mockDecisions,
-  addDecision: (d) => set((s) => ({ decisions: [...s.decisions, d] })),
-  updateDecision: (id, updates) =>
+  addDecision: (d) => { get().saveHistory(); set((s) => ({ decisions: [...s.decisions, d] })); },
+  updateDecision: (id, updates) => {
+    get().saveHistory();
     set((s) => ({
       decisions: s.decisions.map((d) => (d.id === id ? { ...d, ...updates } : d)),
-    })),
-  deleteDecision: (id) => set((s) => ({ decisions: s.decisions.filter((d) => d.id !== id) })),
+    }));
+  },
+  deleteDecision: (id) => { get().saveHistory(); set((s) => ({ decisions: s.decisions.filter((d) => d.id !== id) })); },
 
   connections: mockConnections,
-  addConnection: (c) => set((s) => ({ connections: [...s.connections, c] })),
-  deleteConnection: (id) => set((s) => ({ connections: s.connections.filter((c) => c.id !== id) })),
+  addConnection: (c) => { get().saveHistory(); set((s) => ({ connections: [...s.connections, c] })); },
+  deleteConnection: (id) => { get().saveHistory(); set((s) => ({ connections: s.connections.filter((c) => c.id !== id) })); },
 
   loadTemplate: (templateId) => {
     const preset = templatePresets[templateId];
     if (preset) {
+      get().saveHistory();
       set({
         decisions: preset.decisions,
         connections: preset.connections,
