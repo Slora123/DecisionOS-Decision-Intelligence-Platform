@@ -77,6 +77,18 @@ export default function WorkspacePage() {
   };
   const handleMouseUp = () => setIsPanning(false);
 
+  // Touch handlers for mobile panning
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if ((e.target as HTMLElement).closest('.decision-card-wrapper')) return;
+    setIsPanning(true);
+    setLastMouse({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isPanning) return;
+    setCanvasTransform({ x: panX + (e.touches[0].clientX - lastMouse.x), y: panY + (e.touches[0].clientY - lastMouse.y), scale });
+    setLastMouse({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+  };
+
   const zoomIn = () => setCanvasTransform({ x: panX, y: panY, scale: Math.min(2, scale * 1.2) });
   const zoomOut = () => setCanvasTransform({ x: panX, y: panY, scale: Math.max(0.3, scale / 1.2) });
   const resetView = () => setCanvasTransform({ x: 0, y: 0, scale: 1 });
@@ -152,11 +164,15 @@ export default function WorkspacePage() {
       {/* Canvas Area */}
       <div
         ref={canvasRef}
-        className={clsx('flex-1 relative overflow-hidden cursor-grab', isPanning && 'cursor-grabbing', canvasBg)}
+        className={clsx('flex-1 relative overflow-hidden cursor-grab touch-none', isPanning && 'cursor-grabbing', canvasBg)}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleMouseUp}
+        onTouchCancel={handleMouseUp}
         onClick={() => setSelectedCardId(null)}
       >
         {/* Canvas transform layer */}
